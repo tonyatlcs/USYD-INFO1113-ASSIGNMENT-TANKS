@@ -24,7 +24,15 @@ dependencies {
     implementation 'org.processing:core:3.3.7'
 
     // Use JUnit Jupiter Engine for testing.
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
+}
+
+test {
+    // Use JUnit Platform for running tests.
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

@@ -66,19 +66,20 @@ public class GameTank {
       float bulletYPos = bullet.getProjectileYPos();
 
       // Check for collision
-      if (bullet.getShowProjectile()) {
-        bullet.drawProjectile();
 
-        if (bulletYPos + (8 / 2) >= bullet.getTerrainHeight(bulletXPos)) {
-          bullet.setShowProjectile(false);
+      if (bulletYPos + (8 / 2) >= bullet.getTerrainHeight(bulletXPos)) {
+        if (!bullet.getIsExplosionTriggered()) {
           ProjectileExplosion explosion = new ProjectileExplosion(parent, bulletXPos, bulletYPos, 30);
           explosion.drawExplosion();
+          bullet.setIsExplosionTriggered(true);
+          bullet.setShowProjectile(false);
+
         }
-      } else {
-        if (bulletYPos + (8 / 2) < bullet.getTerrainHeight(bulletXPos))
-          bullet.setShowProjectile(true);
       }
 
+      if (bulletYPos + (8 / 2) < bullet.getTerrainHeight(bulletXPos) && bullet.getShowProjectile()) {
+        bullet.drawProjectile();
+      }
     }
   }
 

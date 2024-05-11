@@ -15,7 +15,8 @@ public class TankProjectile {
 
   private float intialVelocity;
   private float launchAngle;
-  private boolean showProjectile;
+  private boolean showProjectile = true;
+  private boolean isExplosionTriggered = false;
   private ArrayList<Float> terrainHeights;
 
   TankProjectile(
@@ -82,12 +83,20 @@ public class TankProjectile {
   public boolean getShowProjectile() {
     return showProjectile;
   }
+
+  public boolean getIsExplosionTriggered() {
+    return isExplosionTriggered;
+  }
   /*
    * Setters
    */
 
   public void setShowProjectile(boolean showProjectile) {
     this.showProjectile = showProjectile;
+  }
+
+  public void setIsExplosionTriggered(boolean isExplosionTriggered) {
+    this.isExplosionTriggered = isExplosionTriggered;
   }
 
   public void updateProjectilePosition() {
@@ -98,6 +107,7 @@ public class TankProjectile {
 
   public void drawProjectile() {
     parent.noStroke();
+    parent.fill(255, 0, 0);
     parent.ellipse(projectileXPos, projectileYPos, 8, 8);
   }
 

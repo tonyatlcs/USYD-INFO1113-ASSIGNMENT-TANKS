@@ -7,6 +7,7 @@ public class ProjectileExplosion {
   private float impactXPos;
   private float impactYPos;
   private int blastRadius;
+  private boolean explosionTriggered;
   int startTime;
   int animationTimeInterval;
 
@@ -29,6 +30,18 @@ public class ProjectileExplosion {
 
   public float getImpactYPos() {
     return impactYPos;
+  }
+
+  /**
+   * Setters
+   */
+
+  public void setImpactXPos(float impactXPos) {
+    this.impactXPos = impactXPos;
+  }
+
+  public void setImpactYPos(float impactYPos) {
+    this.impactYPos = impactYPos;
   }
 
   public void drawExplosion() {
