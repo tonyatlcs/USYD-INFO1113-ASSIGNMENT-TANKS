@@ -7,7 +7,6 @@ public class ProjectileExplosion {
   private float impactXPos;
   private float impactYPos;
   private int blastRadius;
-  private boolean explosionTriggered;
   int startTime;
   int animationTimeInterval;
 

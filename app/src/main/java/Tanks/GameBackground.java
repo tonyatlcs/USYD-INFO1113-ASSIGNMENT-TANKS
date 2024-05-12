@@ -9,14 +9,14 @@ import processing.data.JSONObject;
 public class GameBackground extends PApplet {
   PImage background_image;
   AppUtils appUtils;
-  String level1BackgroundImageFile;
-  String level1TreeFile;
-  JSONObject level1PlayerColors;
-  ArrayList<Integer> level1Terrain;
-  ArrayList<Integer> level1Trees;
-  ArrayList<Integer> level1Tanks;
-  ArrayList<Float> smoothedLevel1Terrain;
-  ArrayList<Float> curvedLevel1Terrain;
+  String levelBackgroundImageFile;
+  String levelTreeFile;
+  JSONObject levelPlayerColors;
+  ArrayList<Integer> levelTerrain;
+  ArrayList<Integer> levelTrees;
+  ArrayList<Integer> levelTanks;
+  ArrayList<Float> smoothedLevelTerrain;
+  ArrayList<Float> curvedLevelTerrain;
   HashMap<String, GamePlayer> gamePlayers;
   GameTerrain level1;
   GamePlayer currentPlayer;
@@ -30,21 +30,21 @@ public class GameBackground extends PApplet {
     level1 = new GameTerrain(this, this);
 
     // Load level 1 background image, tree file, and player colors
-    level1BackgroundImageFile = appUtils.readLevelConfig("config.json", 1, "background");
-    level1TreeFile = appUtils.readLevelConfig("config.json", 1, "trees");
-    level1PlayerColors = appUtils.readPlayerColors("config.json");
+    levelBackgroundImageFile = appUtils.readLevelConfig("config.json", 1, "background");
+    levelTreeFile = appUtils.readLevelConfig("config.json", 1, "trees");
+    levelPlayerColors = appUtils.readPlayerColors("config.json");
 
     // Load necessary player information
-    level1Terrain = level1.loadTerrainObjects("level1Terrain.txt");
-    level1Trees = level1.loadTerrainObjects("level1Tree.txt");
-    level1Tanks = level1.loadTerrainObjects("level1Tanks.txt");
+    levelTerrain = level1.loadTerrainObjects("level1Terrain.txt");
+    levelTrees = level1.loadTerrainObjects("level1Tree.txt");
+    levelTanks = level1.loadTerrainObjects("level1Tanks.txt");
 
     // Calculate smoothed terrain
-    smoothedLevel1Terrain = level1.calculateMovingAverageInt(level1Terrain);
-    curvedLevel1Terrain = level1.calculateMovingAverageFloat(smoothedLevel1Terrain);
+    smoothedLevelTerrain = level1.calculateMovingAverageInt(levelTerrain);
+    curvedLevelTerrain = level1.calculateMovingAverageFloat(smoothedLevelTerrain);
 
     // Set up game players
-    level1.setGamePlayers(curvedLevel1Terrain, level1Tanks, level1PlayerColors);
+    level1.setGamePlayers(curvedLevelTerrain, levelTanks, levelPlayerColors);
     currentPlayer = level1.getGamePlayers().get("A");
     System.out.println(currentPlayer.getPlayerName());
 
@@ -56,19 +56,17 @@ public class GameBackground extends PApplet {
 
   public void draw() {
     // Background
-    background_image = loadImage(level1BackgroundImageFile);
+    background_image = loadImage(levelBackgroundImageFile);
     image(background_image, 0, 0);
 
     // Render Terrain
-    level1.drawTerrain(curvedLevel1Terrain);
+    level1.drawTerrain(curvedLevelTerrain);
 
     // Render Trees
-    level1.drawTrees(curvedLevel1Terrain, level1Trees, level1TreeFile);
+    level1.drawTrees(curvedLevelTerrain, levelTrees, levelTreeFile);
 
     // Render Tanks
-    level1.drawTanks(curvedLevel1Terrain, level1Tanks, level1PlayerColors);
-
-    currentPlayer.getPlayerTank().setTerrainHeights(curvedLevel1Terrain);
+    level1.drawTanks(curvedLevelTerrain, levelTanks, levelPlayerColors);
 
   }
 

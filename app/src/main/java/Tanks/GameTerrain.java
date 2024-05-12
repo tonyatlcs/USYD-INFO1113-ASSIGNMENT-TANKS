@@ -24,7 +24,7 @@ public class GameTerrain {
   public void setGamePlayers(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTanks,
       JSONObject playerColors) {
     ArrayList<String> tankNames = loadPlayerTanksInfo("level1Tanks.txt");
-    ArrayList<Float> curvedTerrainheights = levelBackground.curvedLevel1Terrain;
+    ArrayList<Float> curvedTerrainheights = levelBackground.curvedLevelTerrain;
     int count = 0;
 
     for (int i = 0; i < terrainTanks.size(); i++) {
