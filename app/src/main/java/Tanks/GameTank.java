@@ -29,8 +29,11 @@ public class GameTank {
   private boolean craterCreated = false;
   private int craterXPos;
   private float craterYPos;
+  float windAcceleration;
+  float windVelocityX;
 
-  GameTank(PApplet parent, ArrayList<Float> curvedTerrainHeight, float xcoord,
+  GameTank(PApplet parent, ArrayList<Float> curvedTerrainHeight, float xcoord, float windAcceleration,
+      float windVelocityX,
       float ycoord) {
     this.parent = parent;
     this.xcoord = xcoord;
@@ -45,10 +48,13 @@ public class GameTank {
     this.speed = 1;
     tankProjectiles = new ArrayList<TankProjectile>();
     this.curvedTerrainHeight = curvedTerrainHeight;
+    this.windAcceleration = windAcceleration;
+    this.windVelocityX = windVelocityX;
 
   }
 
   public void drawTank(String color) {
+
     drawTankObject(color);
 
     // Draw projectile
@@ -61,6 +67,7 @@ public class GameTank {
       if (bulletYPos + (8 / 2) >= bullet.getTerrainHeight(bulletXPos)) {
 
         if (!bullet.getIsExplosionTriggered()) {
+
           ProjectileExplosion explosion = new ProjectileExplosion(parent, bulletXPos, bulletYPos, 30);
           explosion.drawExplosion();
           bullet.setIsExplosionTriggered(true);
@@ -70,11 +77,9 @@ public class GameTank {
 
         }
 
-        // if position of tank is above terrain
         if (parent.height - curvedTerrainHeight.get((int) xcoord) > ycoord) {
           updateTankPosition((int) xcoord, parent.height - curvedTerrainHeight.get((int) xcoord), 60);
         }
-
       }
 
       if (bulletYPos + (8 / 2) < bullet.getTerrainHeight(bulletXPos) && bullet.getShowProjectile()) {
@@ -208,14 +213,17 @@ public class GameTank {
   }
 
   public void updateTankPosition(int xcoord, float ycoord, float speed) {
-
+    PImage parachute = parent.loadImage("parachute.png");
     float changeInY = 1.0f / speed;
-
     float distanceY = speed * changeInY;
 
     this.xcoord = xcoord;
     this.ycoord += distanceY;
 
+    float imageX = this.xcoord - parachute.width / 2;
+    float imageY = this.ycoord - parachute.height - 10;
+
+    parent.image(parachute, imageX, imageY);
   }
 
   public void drawTankObject(String color) {
@@ -240,9 +248,12 @@ public class GameTank {
    */
   public void keyPressed() {
     if (parent.keyCode == ' ') {
+      windAcceleration = (int) parent.random(-5, 5) * 0.03f;
+      windVelocityX = (float) (windAcceleration * (parent.millis() / 1000.0) * (parent.millis() / 1000.0));
+
       System.out.println("Projectile power: " + initalVelocity * loopThroughProjectilePower(projectilePower));
       tankProjectiles.add(
-          new TankProjectile(parent,
+          new TankProjectile(parent, windAcceleration, windVelocityX,
               turretX2Pos, turretY2Pos, initalVelocity * loopThroughProjectilePower(projectilePower), 3.6f,
               PApplet.degrees(-rotationAngle),
               0.05f, curvedTerrainHeight));

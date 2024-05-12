@@ -8,14 +8,20 @@ public class GamePlayer {
   private int playerTankHealth;
   private int playerTankScore;
   private GameTank playerTank;
+  private float windAcceleration;
+  private float windVelocityX;
 
-  public GamePlayer(String playerName, String playerTextColor, String playerTankColor, GameTank playerTank) {
+  public GamePlayer(String playerName, String playerTextColor, String playerTankColor, GameTank playerTank,
+      float windAcceleration, float windVelocityX) {
     this.playerName = playerName;
     this.playerTextColor = playerTextColor;
     this.playerTankColor = playerTankColor;
     this.playerTank = playerTank;
     this.playerTankFuel = 250;
     this.playerTankHealth = 100;
+    this.playerTankScore = 0;
+    this.windAcceleration = windAcceleration;
+    this.windVelocityX = windVelocityX;
 
   }
 
@@ -53,6 +59,14 @@ public class GamePlayer {
 
   public int getPlayerTankHealth() {
     return playerTankHealth;
+  }
+
+  public float getWindAcceleration() {
+    return windAcceleration;
+  }
+
+  public float getWindVelocityX() {
+    return windVelocityX;
   }
 
   public void setPlayerTankHealth(int playerTankHealth) {

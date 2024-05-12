@@ -11,14 +11,26 @@ public class GameTerrain {
   PApplet parent;
   private HashMap<String, GamePlayer> gamePlayers = new HashMap<String, GamePlayer>();
   private GameBackground levelBackground;
+  private float windAcceleration;
+  private float windVelocityX;
 
-  public GameTerrain(PApplet parent, GameBackground levelBackground) {
+  public GameTerrain(PApplet parent, GameBackground levelBackground, float windAcceleration, float windVelocityX) {
     this.parent = parent;
     this.levelBackground = levelBackground;
+    this.windAcceleration = windAcceleration;
+    this.windVelocityX = windVelocityX;
   }
 
   public HashMap<String, GamePlayer> getGamePlayers() {
     return gamePlayers;
+  }
+
+  public float getWindAcceleration() {
+    return windAcceleration;
+  }
+
+  public float getWindVelocityX() {
+    return windVelocityX;
   }
 
   public void setGamePlayers(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTanks,
@@ -32,12 +44,13 @@ public class GameTerrain {
       if (terrainTanks.get(i) == 1) {
         // Give the necessary player information
         GameTank playerTank = new GameTank(parent,
-            curvedTerrainheights, (i) * 32,
+            curvedTerrainheights, (i) * 32, windAcceleration, windVelocityX,
             parent.height - terrainHeights.get(i * 32));
         String playerName = "Player " + tankNames.get(count);
         String playerTextColor = playerColors.getString(tankNames.get(count));
         String playerColor = playerColors.getString(tankNames.get(count));
-        GamePlayer player = new GamePlayer(playerName, playerTextColor, playerColor, playerTank);
+        GamePlayer player = new GamePlayer(playerName, playerTextColor, playerColor, playerTank, windAcceleration,
+            windVelocityX);
 
         gamePlayers.put(tankNames.get(count), player);
 
@@ -102,6 +115,7 @@ public class GameTerrain {
 
   public void drawTanks(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTanks, JSONObject playerColors) {
     ArrayList<String> tankNames = loadPlayerTanksInfo("level1Tanks.txt");
+
     int count = 0;
 
     for (int i = 0; i < terrainTanks.size(); i++) {

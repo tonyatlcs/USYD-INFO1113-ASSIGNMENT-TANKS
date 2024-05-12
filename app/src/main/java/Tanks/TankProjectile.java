@@ -18,9 +18,13 @@ public class TankProjectile {
   private boolean showProjectile = true;
   private boolean isExplosionTriggered = false;
   private ArrayList<Float> terrainHeights;
+  float windVelocityX;
+  float windAcceleration;
 
   TankProjectile(
       PApplet parent,
+      float windVelocityX,
+      float windAcceleration,
       float projectileXPos,
       float projectileYPos,
       float intialVelocity,
@@ -38,6 +42,8 @@ public class TankProjectile {
     this.terrainHeights = terrainHeights;
     this.projectileXVel = intialVelocity * (float) PApplet.cos(PApplet.radians(launchAngle));
     this.projectileYVel = -intialVelocity * (float) PApplet.sin(PApplet.radians(launchAngle));
+    this.windVelocityX = windVelocityX;
+    this.windAcceleration = windAcceleration;
 
   }
 
@@ -100,6 +106,11 @@ public class TankProjectile {
   }
 
   public void updateProjectilePosition() {
+
+    System.out.println("Wind velocity: " + windVelocityX);
+    System.out.println("Wind acceleration: " + windAcceleration);
+
+    projectileXVel += windVelocityX;
     projectileXPos += projectileXVel;
     projectileYPos += projectileYVel;
     projectileYVel += (gravityConstant * timeStepConstant);
@@ -116,7 +127,4 @@ public class TankProjectile {
     return parent.height - terrainHeights.get(index);
   }
 
-  public float[] checkProjectileExplotion() {
-    return new float[2];
-  }
 }

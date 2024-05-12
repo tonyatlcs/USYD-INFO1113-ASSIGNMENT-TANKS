@@ -24,10 +24,13 @@ public class GameBackground extends PApplet {
   int currentPlayerNameIndex = 0;
   float tankTurrentAngle = 0f;
   ArrayList<TankProjectile> tankProjectiles;
+  float windAcceleration = generateInitialWindValue() * (0.03f);
+  float windVelocityX = (float) (windAcceleration * ((millis() / 1000.0) * (millis() / 1000.0)));
 
   public void setup() {
+
     appUtils = new AppUtils(this);
-    level1 = new GameTerrain(this, this);
+    level1 = new GameTerrain(this, this, windAcceleration, windVelocityX);
 
     // Load level 1 background image, tree file, and player colors
     levelBackgroundImageFile = appUtils.readLevelConfig("config.json", 1, "background");
@@ -55,6 +58,7 @@ public class GameBackground extends PApplet {
   }
 
   public void draw() {
+
     // Background
     background_image = loadImage(levelBackgroundImageFile);
     image(background_image, 0, 0);
@@ -124,4 +128,8 @@ public class GameBackground extends PApplet {
     currentPlayer = level1.getGamePlayers().get(currentPlayerName);
   }
 
+  public int generateInitialWindValue() {
+    int windValue = (int) random(-35, 35);
+    return windValue;
+  }
 }
