@@ -9,7 +9,6 @@ public class GameTank {
   PApplet parent;
   private float xcoord;
   private float ycoord;
-  private int tankPower;
   boolean isMovingLeft;
   boolean isMovingRight;
   boolean isRotatingLeft;
@@ -39,7 +38,6 @@ public class GameTank {
     this.xcoord = xcoord;
     this.ycoord = ycoord;
     projectilePower = 1;
-    this.tankPower = 50;
     isMovingLeft = false;
     isMovingRight = false;
     isRotatingLeft = false;
@@ -54,6 +52,8 @@ public class GameTank {
   }
 
   public void drawTank(String color) {
+    PImage windLeftImage = parent.loadImage("wind-1.png");
+    PImage windRightImage = parent.loadImage("wind.png");
 
     drawTankObject(color);
 
@@ -85,6 +85,7 @@ public class GameTank {
       if (bulletYPos + (8 / 2) < bullet.getTerrainHeight(bulletXPos) && bullet.getShowProjectile()) {
         bullet.drawProjectile();
       }
+
     }
 
   }
@@ -92,10 +93,6 @@ public class GameTank {
   /*
    * Getters
    */
-
-  public int getTankPower() {
-    return tankPower;
-  }
 
   public int getSpeed() {
     return speed;
@@ -133,13 +130,13 @@ public class GameTank {
     return craterYPos;
   }
 
+  public float getWindAcceleration() {
+    return windAcceleration;
+  }
+
   /*
    * Setters
    */
-
-  public void setTankPower(int tankPower) {
-    this.tankPower = tankPower;
-  }
 
   public void setTankProjectiles(ArrayList<TankProjectile> tankProjectiles) {
     this.tankProjectiles = tankProjectiles;

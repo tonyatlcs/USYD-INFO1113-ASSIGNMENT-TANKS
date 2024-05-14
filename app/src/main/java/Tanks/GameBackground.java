@@ -8,6 +8,8 @@ import processing.data.JSONObject;
 
 public class GameBackground extends PApplet {
   PImage background_image;
+  PImage windRightImage;
+  PImage windLeftImage;
   AppUtils appUtils;
   String levelBackgroundImageFile;
   String levelTreeFile;
@@ -61,6 +63,9 @@ public class GameBackground extends PApplet {
 
     // Background
     background_image = loadImage(levelBackgroundImageFile);
+    windLeftImage = loadImage("wind-1.png");
+    windRightImage = loadImage("wind.png");
+
     image(background_image, 0, 0);
 
     // Render Terrain
@@ -72,6 +77,46 @@ public class GameBackground extends PApplet {
     // Render Tanks
     level1.drawTanks(curvedLevelTerrain, levelTanks, levelPlayerColors);
 
+    // Render player names
+    textSize(16);
+    fill(0);
+    text(currentPlayer.getPlayerName() + "'s turn", 10, 35);
+
+    // Render player fuel
+    PImage fuel = loadImage("fuel.png");
+    fuel.resize(30, 30);
+    image(fuel, 160, 10);
+    text(currentPlayer.getPlayerTankFuel(), 190, 35);
+
+    // Render player health
+    text("Health: ", 380, 35);
+    String[] colorArr = currentPlayer.getPlayerTankColor().split(",");
+    fill(Integer.parseInt(colorArr[0]), Integer.parseInt(colorArr[1]), Integer.parseInt(colorArr[2]));
+    rect(440, 19, 100, 20);
+    fill(0);
+    text(currentPlayer.getPlayerTankHealth(), 545, 35);
+
+    // Render Power level
+    fill(0);
+    text("Power: ", 380, 65);
+    text((int) (currentPlayer.getPlayerTank().projectilePower * 10), 440, 65);
+    System.out.println("Wind acceleration: " + currentPlayer.getPlayerTank().getWindAcceleration());
+
+    if (currentPlayer.getPlayerTank().getWindAcceleration() > 0) {
+      image(windRightImage, 700, 10);
+      text(round(abs(currentPlayer.getPlayerTank().getWindAcceleration() * 100)), 770, 45);
+    } else if (currentPlayer.getPlayerTank().getWindAcceleration() < 0) {
+      image(windLeftImage, 700, 10);
+      text(round(abs(currentPlayer.getPlayerTank().getWindAcceleration() * 100)), 770, 45);
+    }
+  }
+
+  public void updateTankFuel() {
+    if (currentPlayer.getPlayerTankFuel() > 0 || currentPlayer.getPlayerTankFuel() <= 250) {
+      int fuelRate = 0;
+      fuelRate++;
+      currentPlayer.setPlayerTankFuel(currentPlayer.getPlayerTankFuel() - fuelRate);
+    }
   }
 
   public void keyPressed() {
@@ -79,12 +124,20 @@ public class GameBackground extends PApplet {
     if (key == CODED) {
       if (keyCode == RIGHT) {
         currentPlayer.getPlayerTank().isMovingRight = true;
-        currentPlayer.getPlayerTank().moveTank();
+        if (currentPlayer.getPlayerTankFuel() > 0) {
+          currentPlayer.getPlayerTank().moveTank();
+          updateTankFuel();
+        }
+
       }
 
       if (keyCode == LEFT) {
         currentPlayer.getPlayerTank().isMovingLeft = true;
-        currentPlayer.getPlayerTank().moveTank();
+        if (currentPlayer.getPlayerTankFuel() > 0) {
+          currentPlayer.getPlayerTank().moveTank();
+          updateTankFuel();
+        }
+
       }
 
       if (keyCode == DOWN && currentPlayer.getPlayerTank().rotationAngle < 0) {
@@ -101,7 +154,13 @@ public class GameBackground extends PApplet {
     }
 
     if (key == 'w') {
-      currentPlayer.getPlayerTank().projectilePower += 1;
+      if (currentPlayer.getPlayerTank().projectilePower < 9)
+        currentPlayer.getPlayerTank().projectilePower += 1;
+    }
+
+    if (key == 's') {
+      if (currentPlayer.getPlayerTank().projectilePower > 0)
+        currentPlayer.getPlayerTank().projectilePower -= 1;
     }
 
     if (key == ' ') {

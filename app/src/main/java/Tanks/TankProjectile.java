@@ -93,6 +93,10 @@ public class TankProjectile {
   public boolean getIsExplosionTriggered() {
     return isExplosionTriggered;
   }
+
+  public float getWindAcceleration() {
+    return windAcceleration;
+  }
   /*
    * Setters
    */
@@ -106,9 +110,6 @@ public class TankProjectile {
   }
 
   public void updateProjectilePosition() {
-
-    System.out.println("Wind velocity: " + windVelocityX);
-    System.out.println("Wind acceleration: " + windAcceleration);
 
     projectileXVel += windVelocityX;
     projectileXPos += projectileXVel;
