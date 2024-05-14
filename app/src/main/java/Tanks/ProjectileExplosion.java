@@ -31,6 +31,10 @@ public class ProjectileExplosion {
     return impactYPos;
   }
 
+  public float getBlastRadius() {
+    return blastRadius;
+  }
+
   /**
    * Setters
    */

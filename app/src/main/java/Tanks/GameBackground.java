@@ -20,7 +20,7 @@ public class GameBackground extends PApplet {
   ArrayList<Float> smoothedLevelTerrain;
   ArrayList<Float> curvedLevelTerrain;
   HashMap<String, GamePlayer> gamePlayers;
-  GameTerrain level1;
+  GameTerrain level;
   GamePlayer currentPlayer;
   String currentPlayerName;
   int currentPlayerNameIndex = 0;
@@ -28,11 +28,12 @@ public class GameBackground extends PApplet {
   ArrayList<TankProjectile> tankProjectiles;
   float windAcceleration = generateInitialWindValue() * (0.03f);
   float windVelocityX = (float) (windAcceleration * ((millis() / 1000.0) * (millis() / 1000.0)));
+  boolean calculatedDamage = false;
 
   public void setup() {
 
     appUtils = new AppUtils(this);
-    level1 = new GameTerrain(this, this, windAcceleration, windVelocityX);
+    level = new GameTerrain(this, this, windAcceleration, windVelocityX);
 
     // Load level 1 background image, tree file, and player colors
     levelBackgroundImageFile = appUtils.readLevelConfig("config.json", 1, "background");
@@ -40,17 +41,17 @@ public class GameBackground extends PApplet {
     levelPlayerColors = appUtils.readPlayerColors("config.json");
 
     // Load necessary player information
-    levelTerrain = level1.loadTerrainObjects("level1Terrain.txt");
-    levelTrees = level1.loadTerrainObjects("level1Tree.txt");
-    levelTanks = level1.loadTerrainObjects("level1Tanks.txt");
+    levelTerrain = level.loadTerrainObjects("level1Terrain.txt");
+    levelTrees = level.loadTerrainObjects("level1Tree.txt");
+    levelTanks = level.loadTerrainObjects("level1Tanks.txt");
 
     // Calculate smoothed terrain
-    smoothedLevelTerrain = level1.calculateMovingAverageInt(levelTerrain);
-    curvedLevelTerrain = level1.calculateMovingAverageFloat(smoothedLevelTerrain);
+    smoothedLevelTerrain = level.calculateMovingAverageInt(levelTerrain);
+    curvedLevelTerrain = level.calculateMovingAverageFloat(smoothedLevelTerrain);
 
     // Set up game players
-    level1.setGamePlayers(curvedLevelTerrain, levelTanks, levelPlayerColors);
-    currentPlayer = level1.getGamePlayers().get("A");
+    level.setGamePlayers(curvedLevelTerrain, levelTanks, levelPlayerColors);
+    currentPlayer = level.getGamePlayers().get("A");
     System.out.println(currentPlayer.getPlayerName());
 
   }
@@ -60,7 +61,6 @@ public class GameBackground extends PApplet {
   }
 
   public void draw() {
-
     // Background
     background_image = loadImage(levelBackgroundImageFile);
     windLeftImage = loadImage("wind-1.png");
@@ -69,13 +69,13 @@ public class GameBackground extends PApplet {
     image(background_image, 0, 0);
 
     // Render Terrain
-    level1.drawTerrain(curvedLevelTerrain);
+    level.drawTerrain(curvedLevelTerrain);
 
     // Render Trees
-    level1.drawTrees(curvedLevelTerrain, levelTrees, levelTreeFile);
+    level.drawTrees(curvedLevelTerrain, levelTrees, levelTreeFile);
 
     // Render Tanks
-    level1.drawTanks(curvedLevelTerrain, levelTanks, levelPlayerColors);
+    level.drawTanks(curvedLevelTerrain, levelTanks, levelPlayerColors);
 
     // Render player names
     textSize(16);
@@ -100,15 +100,30 @@ public class GameBackground extends PApplet {
     fill(0);
     text("Power: ", 380, 65);
     text((int) (currentPlayer.getPlayerTank().projectilePower * 10), 440, 65);
-    System.out.println("Wind acceleration: " + currentPlayer.getPlayerTank().getWindAcceleration());
 
     if (currentPlayer.getPlayerTank().getWindAcceleration() > 0) {
+      text(round(abs(currentPlayer.getPlayerTank().getWindAcceleration() * 100)), 770, 45);
       image(windRightImage, 700, 10);
-      text(round(abs(currentPlayer.getPlayerTank().getWindAcceleration() * 100)), 770, 45);
     } else if (currentPlayer.getPlayerTank().getWindAcceleration() < 0) {
-      image(windLeftImage, 700, 10);
       text(round(abs(currentPlayer.getPlayerTank().getWindAcceleration() * 100)), 770, 45);
+      image(windLeftImage, 700, 10);
+    } else {
+      image(windRightImage, 700, 10);
+      text('0', 770, 45);
     }
+
+    if (!calculatedDamage) {
+      for (GamePlayer tank : level.getGamePlayers().values()) {
+        int health = tank.getPlayerTank().applyHealthDamage(tank.getPlayerTank().getCraterXPos(),
+            tank.getPlayerTank().getCraterYPos(),
+            tank.getPlayerTank().getBlastRadius());
+        System.out.println(calculatedDamage);
+        System.out.println(health);
+        tank.setPlayerTankHealth(health);
+      }
+      calculatedDamage = true;
+    }
+
   }
 
   public void updateTankFuel() {
@@ -120,7 +135,7 @@ public class GameBackground extends PApplet {
   }
 
   public void keyPressed() {
-    String[] playersNames = level1.getGamePlayers().keySet().toArray(new String[0]);
+    String[] playersNames = level.getGamePlayers().keySet().toArray(new String[0]);
     if (key == CODED) {
       if (keyCode == RIGHT) {
         currentPlayer.getPlayerTank().isMovingRight = true;
@@ -166,6 +181,7 @@ public class GameBackground extends PApplet {
     if (key == ' ') {
       currentPlayer.getPlayerTank().keyPressed();
       switchPlayer(playersNames);
+      calculatedDamage = false;
     }
   }
 
@@ -184,7 +200,7 @@ public class GameBackground extends PApplet {
   public void switchPlayer(String[] playersNames) {
     currentPlayerNameIndex = (currentPlayerNameIndex + 1) % playersNames.length;
     currentPlayerName = playersNames[currentPlayerNameIndex];
-    currentPlayer = level1.getGamePlayers().get(currentPlayerName);
+    currentPlayer = level.getGamePlayers().get(currentPlayerName);
   }
 
   public int generateInitialWindValue() {

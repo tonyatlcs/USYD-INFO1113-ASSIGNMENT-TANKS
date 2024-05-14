@@ -23,7 +23,6 @@ public class TankProjectile {
 
   TankProjectile(
       PApplet parent,
-      float windVelocityX,
       float windAcceleration,
       float projectileXPos,
       float projectileYPos,
@@ -42,9 +41,7 @@ public class TankProjectile {
     this.terrainHeights = terrainHeights;
     this.projectileXVel = intialVelocity * (float) PApplet.cos(PApplet.radians(launchAngle));
     this.projectileYVel = -intialVelocity * (float) PApplet.sin(PApplet.radians(launchAngle));
-    this.windVelocityX = windVelocityX;
     this.windAcceleration = windAcceleration;
-
   }
 
   /*
@@ -111,10 +108,11 @@ public class TankProjectile {
 
   public void updateProjectilePosition() {
 
-    projectileXVel += windVelocityX;
+    projectileXVel += windAcceleration;
     projectileXPos += projectileXVel;
     projectileYPos += projectileYVel;
     projectileYVel += (gravityConstant * timeStepConstant);
+
   }
 
   public void drawProjectile() {

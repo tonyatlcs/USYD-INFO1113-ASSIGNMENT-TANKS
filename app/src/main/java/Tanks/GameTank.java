@@ -9,13 +9,14 @@ public class GameTank {
   PApplet parent;
   private float xcoord;
   private float ycoord;
+  private int tankHealth;
   boolean isMovingLeft;
   boolean isMovingRight;
   boolean isRotatingLeft;
   boolean isRotatingRight;
   float rotationAngle;
   private int speed;
-  ArrayList<TankProjectile> tankProjectiles;
+  TankProjectile tankProjectile;
   float turretX1Pos;
   float turretY1Pos;
   float turretX2Pos;
@@ -26,10 +27,12 @@ public class GameTank {
   private ArrayList<Float> curvedTerrainHeight;
   private int totalProjectilesRendered = 0;
   private boolean craterCreated = false;
-  private int craterXPos;
+  private float craterXPos;
   private float craterYPos;
   float windAcceleration;
   float windVelocityX;
+  String windDirection;
+  private int blastRadius;
 
   GameTank(PApplet parent, ArrayList<Float> curvedTerrainHeight, float xcoord, float windAcceleration,
       float windVelocityX,
@@ -44,48 +47,48 @@ public class GameTank {
     isRotatingRight = false;
     rotationAngle = 0;
     this.speed = 1;
-    tankProjectiles = new ArrayList<TankProjectile>();
     this.curvedTerrainHeight = curvedTerrainHeight;
     this.windAcceleration = windAcceleration;
     this.windVelocityX = windVelocityX;
+    this.tankProjectile = new TankProjectile(parent, 0, 0, 0, -10, -10, 0, 0, curvedTerrainHeight);
+    this.tankHealth = 100;
 
   }
 
   public void drawTank(String color) {
-    PImage windLeftImage = parent.loadImage("wind-1.png");
-    PImage windRightImage = parent.loadImage("wind.png");
 
     drawTankObject(color);
 
     // Draw projectile
-    for (TankProjectile bullet : tankProjectiles) {
-      bullet.updateProjectilePosition();
-      float bulletXPos = bullet.getProjectileXPos();
-      float bulletYPos = bullet.getProjectileYPos();
 
-      // Check for collision
-      if (bulletYPos + (8 / 2) >= bullet.getTerrainHeight(bulletXPos)) {
+    tankProjectile.updateProjectilePosition();
+    float bulletXPos = tankProjectile.getProjectileXPos();
+    float bulletYPos = tankProjectile.getProjectileYPos();
 
-        if (!bullet.getIsExplosionTriggered()) {
+    // Check for collision
+    if (bulletYPos + (8 / 2) >= tankProjectile.getTerrainHeight(bulletXPos)) {
 
-          ProjectileExplosion explosion = new ProjectileExplosion(parent, bulletXPos, bulletYPos, 30);
-          explosion.drawExplosion();
-          bullet.setIsExplosionTriggered(true);
-          bullet.setShowProjectile(false);
-          createCrater((int) bulletXPos, 15);
-          setCraterCreated(true);
+      if (!tankProjectile.getIsExplosionTriggered()) {
 
-        }
+        ProjectileExplosion explosion = new ProjectileExplosion(parent, bulletXPos, bulletYPos, 30);
 
-        if (parent.height - curvedTerrainHeight.get((int) xcoord) > ycoord) {
-          updateTankPosition((int) xcoord, parent.height - curvedTerrainHeight.get((int) xcoord), 60);
-        }
+        explosion.drawExplosion();
+        tankProjectile.setIsExplosionTriggered(true);
+        tankProjectile.setShowProjectile(false);
+        createCrater((int) bulletXPos, 15);
+        setCraterXPos(tankProjectile.getProjectileXPos());
+        setCraterYPos(tankProjectile.getProjectileYPos());
+        setCraterCreated(true);
+
       }
 
-      if (bulletYPos + (8 / 2) < bullet.getTerrainHeight(bulletXPos) && bullet.getShowProjectile()) {
-        bullet.drawProjectile();
+      if (parent.height - curvedTerrainHeight.get((int) xcoord) > ycoord) {
+        updateTankPosition((int) xcoord, parent.height - curvedTerrainHeight.get((int) xcoord), 60);
       }
+    }
 
+    if (bulletYPos + (8 / 2) < tankProjectile.getTerrainHeight(bulletXPos) && tankProjectile.getShowProjectile()) {
+      tankProjectile.drawProjectile();
     }
 
   }
@@ -98,8 +101,8 @@ public class GameTank {
     return speed;
   }
 
-  public ArrayList<TankProjectile> getTankProjectiles() {
-    return tankProjectiles;
+  public TankProjectile getTankProjectile() {
+    return tankProjectile;
   }
 
   public float getXCoord() {
@@ -122,7 +125,7 @@ public class GameTank {
     return totalProjectilesRendered;
   }
 
-  public int getCraterXPos() {
+  public float getCraterXPos() {
     return craterXPos;
   }
 
@@ -134,12 +137,20 @@ public class GameTank {
     return windAcceleration;
   }
 
+  public int getBlastRadius() {
+    return blastRadius;
+  }
+
+  public int getTankHealth() {
+    return tankHealth;
+  }
+
   /*
    * Setters
    */
 
-  public void setTankProjectiles(ArrayList<TankProjectile> tankProjectiles) {
-    this.tankProjectiles = tankProjectiles;
+  public void setTankProjectiles(TankProjectile tankProjectile) {
+    this.tankProjectile = tankProjectile;
   }
 
   public void setCurvedTerrainHeight(ArrayList<Float> curvedTerrainHeight) {
@@ -154,12 +165,16 @@ public class GameTank {
     this.totalProjectilesRendered = totalProjectilesRendered;
   }
 
-  public void setCraterXPos(int craterXPos) {
+  public void setCraterXPos(float craterXPos) {
     this.craterXPos = craterXPos;
   }
 
   public void setCraterYPos(float craterYPos) {
     this.craterYPos = craterYPos;
+  }
+
+  public void setBlastRadius(int blastRadius) {
+    this.blastRadius = blastRadius;
   }
 
   /*
@@ -200,6 +215,7 @@ public class GameTank {
   }
 
   public void createCrater(int XPos, int blastRadius) {
+    setBlastRadius(blastRadius);
     for (int i = 0; i < curvedTerrainHeight.size(); i++) {
       if (i >= XPos - blastRadius && i <= XPos + blastRadius) {
         float distance = PApplet.dist(XPos, 0, i, 0);
@@ -240,20 +256,53 @@ public class GameTank {
     parent.line(turretX1Pos, turretY1Pos, turretX2Pos, turretY2Pos);
   }
 
+  public void resetWindComponent() {
+    windAcceleration = (int) parent.random(-5, 5) * 0.03f;
+  }
+
   /*
    * tank key press functions
    */
   public void keyPressed() {
     if (parent.keyCode == ' ') {
-      windAcceleration = (int) parent.random(-5, 5) * 0.03f;
-      windVelocityX = (float) (windAcceleration * (parent.millis() / 1000.0) * (parent.millis() / 1000.0));
+      resetWindComponent();
 
       System.out.println("Projectile power: " + initalVelocity * loopThroughProjectilePower(projectilePower));
-      tankProjectiles.add(
-          new TankProjectile(parent, windAcceleration, windVelocityX,
-              turretX2Pos, turretY2Pos, initalVelocity * loopThroughProjectilePower(projectilePower), 3.6f,
-              PApplet.degrees(-rotationAngle),
-              0.05f, curvedTerrainHeight));
+      tankProjectile = new TankProjectile(parent,
+          windAcceleration,
+          turretX2Pos, turretY2Pos, initalVelocity * loopThroughProjectilePower(projectilePower), 3.6f,
+          PApplet.degrees(-rotationAngle),
+          0.05f, curvedTerrainHeight);
     }
+  }
+
+  public int applyHealthDamage(float blastXPos, float blastYPos, float radius) {
+    float distance = PApplet.dist(
+        blastXPos,
+        blastYPos,
+        xcoord,
+        ycoord);
+    System.out.println(blastXPos);
+    System.out.println(blastYPos);
+    System.out.println(xcoord);
+    System.out.println(ycoord);
+    if (PApplet.abs(distance - radius) < 15f) {
+      tankHealth = tankHealth - 30;
+      System.out.println(tankHealth);
+
+      return tankHealth;
+    } else if (PApplet.abs(distance - radius) < 10f) {
+      tankHealth = tankHealth - 40;
+      System.out.println(tankHealth);
+
+      return tankHealth;
+    } else if (PApplet.abs(distance - radius) < 20f) {
+      tankHealth = tankHealth - 20;
+      System.out.println(tankHealth);
+      return tankHealth;
+    } else {
+      return tankHealth - 0;
+    }
+
   }
 }

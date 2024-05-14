@@ -58,6 +58,9 @@ public class GamePlayer {
   }
 
   public int getPlayerTankHealth() {
+    if (playerTankHealth < 0) {
+      playerTankHealth = 0;
+    }
     return playerTankHealth;
   }
 
