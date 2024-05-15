@@ -47,6 +47,9 @@ public class ProjectileExplosion {
     this.impactYPos = impactYPos;
   }
 
+  /**
+   * This function draws the explosion on the screen
+   */
   public void drawExplosion() {
 
     parent.noStroke();

@@ -67,9 +67,7 @@ public class GameTank {
 
     // Check for collision
     if (bulletYPos + (8 / 2) >= tankProjectile.getTerrainHeight(bulletXPos)) {
-
       if (!tankProjectile.getIsExplosionTriggered()) {
-
         ProjectileExplosion explosion = new ProjectileExplosion(parent, bulletXPos, bulletYPos, 30);
 
         explosion.drawExplosion();
@@ -79,7 +77,6 @@ public class GameTank {
         setCraterXPos(tankProjectile.getProjectileXPos());
         setCraterYPos(tankProjectile.getProjectileYPos());
         setCraterCreated(true);
-
       }
 
       if (parent.height - curvedTerrainHeight.get((int) xcoord) > ycoord) {
@@ -90,7 +87,6 @@ public class GameTank {
     if (bulletYPos + (8 / 2) < tankProjectile.getTerrainHeight(bulletXPos) && tankProjectile.getShowProjectile()) {
       tankProjectile.drawProjectile();
     }
-
   }
 
   /*

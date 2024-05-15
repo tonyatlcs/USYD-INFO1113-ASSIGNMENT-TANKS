@@ -21,6 +21,10 @@ public class GameTerrain {
     this.windVelocityX = windVelocityX;
   }
 
+  /**
+   * Getters
+   * 
+   */
   public HashMap<String, GamePlayer> getGamePlayers() {
     return gamePlayers;
   }
@@ -33,6 +37,14 @@ public class GameTerrain {
     return windVelocityX;
   }
 
+  /**
+   * This function saves all the required information that are required for a game
+   * player
+   * 
+   * @param terrainHeights
+   * @param terrainTanks
+   * @param playerColors
+   */
   public void setGamePlayers(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTanks,
       JSONObject playerColors) {
     ArrayList<String> tankNames = loadPlayerTanksInfo("level1Tanks.txt");
@@ -59,6 +71,12 @@ public class GameTerrain {
     }
   }
 
+  /**
+   * This loads the terrain configuration from a txt file
+   * 
+   * @param fileName
+   * @return
+   */
   public ArrayList<Integer> loadTerrainObjects(String fileName) {
     String[] level1TerrainObject = parent.loadStrings(fileName);
     ArrayList<Integer> terrainHeights = new ArrayList<Integer>();
@@ -70,6 +88,12 @@ public class GameTerrain {
     return terrainHeights;
   }
 
+  /**
+   * This loads the player tank configuration from a txt file
+   * 
+   * @param fileName
+   * @return
+   */
   public ArrayList<String> loadPlayerTanksInfo(String fileName) {
     String[] level1TerrainObject = parent.loadStrings(fileName);
     ArrayList<String> terrainTanks = new ArrayList<String>();
@@ -84,6 +108,12 @@ public class GameTerrain {
     return terrainTanks;
   }
 
+  /**
+   * This function calculates the number of players in the game
+   * 
+   * @param terrainTanks
+   * @return
+   */
   public int calculateGamePlayerNumbers(ArrayList<Integer> terrainTanks) {
     int count = 0;
     for (int i = 0; i < terrainTanks.size(); i++) {
@@ -94,6 +124,11 @@ public class GameTerrain {
     return count;
   }
 
+  /**
+   * This function draws the terrain onto the game window
+   * 
+   * @param terrainPixelHeights
+   */
   public void drawTerrain(ArrayList<Float> terrainPixelHeights) {
     // draw a rectangle for each pixel in the terrain
     for (int i = 0; i < terrainPixelHeights.size(); i++) {
@@ -102,6 +137,13 @@ public class GameTerrain {
     }
   }
 
+  /**
+   * This function draws the trees onto the game window
+   * 
+   * @param terrainHeights
+   * @param terrainTrees
+   * @param file
+   */
   public void drawTrees(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTrees, String file) {
     PImage tree = parent.loadImage(file);
     tree.resize(30, 30);
@@ -113,6 +155,13 @@ public class GameTerrain {
     }
   }
 
+  /**
+   * This function draws the tanks onto the game window
+   * 
+   * @param terrainHeights
+   * @param terrainTanks
+   * @param playerColors
+   */
   public void drawTanks(ArrayList<Float> terrainHeights, ArrayList<Integer> terrainTanks, JSONObject playerColors) {
     ArrayList<String> tankNames = loadPlayerTanksInfo("level1Tanks.txt");
 
@@ -130,6 +179,12 @@ public class GameTerrain {
     }
   }
 
+  /**
+   * This function calculates the moving average of the terrain heights
+   * 
+   * @param terrainHeights
+   * @return
+   */
   public ArrayList<Float> calculateMovingAverageInt(ArrayList<Integer> terrainHeights) {
     ArrayList<Float> TerrainPixelHeight = new ArrayList<Float>();
     ArrayList<Float> smoothedTerrainPixelHeight = new ArrayList<Float>();
@@ -152,6 +207,13 @@ public class GameTerrain {
 
   }
 
+  /**
+   * This function calculates the moving average of the terrain heights from an
+   * array list of floating points
+   * 
+   * @param terrainPixelHeights
+   * @return
+   */
   public ArrayList<Float> calculateMovingAverageFloat(ArrayList<Float> terrainPixelHeights) {
     ArrayList<Float> smoothedTerrainPixelHeight = new ArrayList<Float>();
     MovingAverage movingAverage = new MovingAverage(32);

@@ -91,12 +91,18 @@ public class GameBackground extends PApplet {
     // Render player health
     text("Health: ", 380, 35);
     String[] colorArr = currentPlayer.getPlayerTankColor().split(",");
-    fill(Integer.parseInt(colorArr[0]), Integer.parseInt(colorArr[1]), Integer.parseInt(colorArr[2]));
+    fill(200);
     rect(440, 19, 100, 20);
     fill(0);
     text(currentPlayer.getPlayerTankHealth(), 545, 35);
 
+    // Render current health
+    stroke(0);
+    fill(Integer.parseInt(colorArr[0]), Integer.parseInt(colorArr[1]), Integer.parseInt(colorArr[2]));
+    rect(440, 19, currentPlayer.getPlayerTankHealth(), 20);
+
     // Render Power level
+    stroke(0);
     fill(0);
     text("Power: ", 380, 65);
     text((int) (currentPlayer.getPlayerTank().projectilePower * 10), 440, 65);
@@ -117,15 +123,26 @@ public class GameBackground extends PApplet {
         int health = tank.getPlayerTank().applyHealthDamage(tank.getPlayerTank().getCraterXPos(),
             tank.getPlayerTank().getCraterYPos(),
             tank.getPlayerTank().getBlastRadius());
-        System.out.println(calculatedDamage);
+        System.out.println("Damage caused: " + calculatedDamage);
         System.out.println(health);
         tank.setPlayerTankHealth(health);
       }
       calculatedDamage = true;
     }
 
+    // Check for tank health == 0
+    for (GamePlayer tank : level.getGamePlayers().values()) {
+      if (tank.getPlayerTankHealth() == 0) {
+        level.getGamePlayers().remove(tank.getPlayerName());
+      }
+    }
+
   }
 
+  /**
+   * This function calculates the tank fuel deductions and subtracts accordingly
+   * from the tank fuel reserve.
+   */
   public void updateTankFuel() {
     if (currentPlayer.getPlayerTankFuel() > 0 || currentPlayer.getPlayerTankFuel() <= 250) {
       int fuelRate = 0;
@@ -197,12 +214,22 @@ public class GameBackground extends PApplet {
     }
   }
 
+  /**
+   * This function switches the player's turn
+   * 
+   * @param playersNames
+   */
   public void switchPlayer(String[] playersNames) {
     currentPlayerNameIndex = (currentPlayerNameIndex + 1) % playersNames.length;
     currentPlayerName = playersNames[currentPlayerNameIndex];
     currentPlayer = level.getGamePlayers().get(currentPlayerName);
   }
 
+  /**
+   * This function generates a random wind value
+   * 
+   * @return The wind value
+   */
   public int generateInitialWindValue() {
     int windValue = (int) random(-35, 35);
     return windValue;

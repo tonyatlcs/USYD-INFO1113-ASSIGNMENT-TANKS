@@ -106,8 +106,11 @@ public class TankProjectile {
     this.isExplosionTriggered = isExplosionTriggered;
   }
 
+  /**
+   * This function updates the projectile position based on the wind acceleration.
+   * If there is no wind, it follows the normal projectile path.
+   */
   public void updateProjectilePosition() {
-
     projectileXVel += windAcceleration;
     projectileXPos += projectileXVel;
     projectileYPos += projectileYVel;
@@ -115,12 +118,21 @@ public class TankProjectile {
 
   }
 
+  /**
+   * This function draws the projectile on the screen
+   */
   public void drawProjectile() {
     parent.noStroke();
     parent.fill(255, 0, 0);
     parent.ellipse(projectileXPos, projectileYPos, 8, 8);
   }
 
+  /**
+   * This function returns the terrain height at a given x position
+   * 
+   * @param xPos
+   * @return
+   */
   public float getTerrainHeight(float xPos) {
     int index = PApplet.constrain(PApplet.round(xPos), 0, parent.width - 1);
     return parent.height - terrainHeights.get(index);
